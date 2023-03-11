@@ -1,0 +1,353 @@
+﻿@page "/"
+@using System.Globalization
+
+<PageTitle>BZ Calculator</PageTitle>
+
+<div class="conatiner d-flex flex-column min-vh-100 justify-content-center align-items-center">
+
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 col-xxl-4">
+        <h1 class="fw-bold my-4 text-center h1">BZ Calculator</h1>
+        <div class="card card-body p-1 rounded-2 shadow-sm">
+            <div class="my-3 p-3 d-flex items-center justify-content-end">
+                <h5 class="fw-bold mb-0" style="font-size: 2.4rem">@result</h5>
+            </div>
+            <div class="row g-1">
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("%")' class="@itemClasses" role="button">
+                        %
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => ClearEntry()' class="@itemClasses" role="button">
+                        CE
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => Reset()" class="@itemClasses" role="button">
+                        C
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => Delete()" class="@itemClasses" role="button">
+                        <i class="bi bi-backspace"></i>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => ChangeSign()" class="@itemClasses" role="button">
+                        <sup>+</sup>/<sub>-</sub>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("Square")' class="@itemClasses" role="button">
+                        x<sup>2</sup>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("Sqrt")' class="@itemClasses" role="button">
+                        <img src="/images/square-root-of-x-math-formula.png" style="height: 24px" />
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("/")' class="@itemClasses" role="button">
+                        <img src="/images/divide.png" style="height: 24px" />
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('7')" class="@itemClasses" role="button">
+                        7
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('8')" class="@itemClasses" role="button">
+                        8
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('9')" class="@itemClasses" role="button">
+                        9
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("*")' class="px-4 py-3 bg-white fs-3 fw-light shadow-sm rounded-2 text-center border" role="button">
+                        x
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('4')" class="@itemClasses" role="button">
+                        4
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('5')" class="@itemClasses" role="button">
+                        5
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('6')" class="@itemClasses" role="button">
+                        6
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("-")' class="@itemClasses" role="button">
+                        <i class="bi bi-dash"></i>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('1')" class="@itemClasses" role="button">
+                        1
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('2')" class="@itemClasses" role="button">
+                        2
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('3')" class="@itemClasses" role="button">
+                        3
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick='() => SetOperator("+")' class="@itemClasses" role="button">
+                        +
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('0')" class="@itemClasses" role="button">
+                        0
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div @onclick="() => AddDigit('.')" class="@itemClasses" role="button">
+                        .
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div @onclick="() => Calculate()" class="px-4 bg-primary text-white py-3 fs-3 shadow-sm rounded-2 text-center border border-primary" role="button">
+                        =
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string itemClasses = "px-4 py-3 bg-white fs-3 item-btn shadow-sm rounded-2 text-center border";
+    private string[] acceptedOperators = { "+", "-", "/", "*", "%", "Mod", "Square", "Sqrt" };
+    private string result = "0";
+    private double? firstNumber;
+    private double? secondNumber;
+    private string? _oparator;
+    private bool error = false;
+    private bool calculated = false;
+
+    private void AddDigit(char digit)
+    {
+        if (_oparator == null)
+        {
+            UpdateResult(digit, "first");
+        }
+        else
+        {
+            if (secondNumber == null || calculated)
+                result = "0";
+
+            UpdateResult(digit, "second");
+        }
+    }
+
+    private void UpdateResult(char digit, string key)
+    {
+        if (digit != '-')
+        {
+            if (result == "0")
+            {
+                if (digit == '.')
+                {
+                    if (!result.Contains('.'))
+                        result += '.';
+                }
+                else
+                    result = digit.ToString();
+            }
+            else
+            {
+                if (digit == '.')
+                {
+                    if (!result.Contains('.'))
+                        result += '.';
+                }
+                else
+                    result += digit;
+            }
+        }
+
+        if (!result.EndsWith('.'))
+        {
+            if (key == "first")
+                firstNumber = ConvertToDouble(result);
+            else if (key == "second")
+                secondNumber = ConvertToDouble(result);
+        }
+    }
+
+    private void ClearEntry()
+    {
+        if (result != "0" && result.Length > 0)
+        {
+            result = result.Remove(result.Length - 1);
+            result = result.Length > 0 ? result : "0";
+        }
+    }
+
+    private void Reset()
+    {
+        result = "0";
+        firstNumber = null;
+        secondNumber = null;
+        _oparator = null;
+        error = false;
+    }
+
+    private void Delete()
+    {
+        if (error)
+        {
+            result = "0";
+        }
+        else
+        {
+            if (result != "0" && result.Length > 0)
+            {
+                result = result.Remove(result.Length - 1);
+                result = result.Length > 0 ? result : "0";
+            }
+        }
+    }
+
+    private void ChangeSign()
+    {
+        if (result != "0")
+        {
+            if (result.StartsWith("-"))
+                result = result.Remove(0, 1);
+            else
+                result = '-' + result;
+
+            AddDigit('-');
+        }
+    }
+
+    private void SetOperator(string op)
+    {
+        if (acceptedOperators.Contains(op))
+        {
+            _oparator = op;
+
+            if (op == "%")
+                Calculate();
+
+            if (op == "Square")
+                Calculate();
+
+            if (op == "Sqrt")
+                Calculate();
+
+        }
+    }
+
+    private double ConvertToDouble(string s)
+    {
+        char systemSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
+        double res = 0;
+        try
+        {
+            if (s != null)
+                if (!s.Contains(","))
+                    res = double.Parse(s, CultureInfo.InvariantCulture);
+                else
+                    res = Convert.ToDouble(s.Replace(".", systemSeparator.ToString()).Replace(",", systemSeparator.ToString()));
+        }
+        catch (Exception e)
+        {
+            try
+            {
+                res = Convert.ToDouble(s);
+            }
+            catch
+            {
+                try
+                {
+                    res = Convert.ToDouble(s.Replace(",", ";").Replace(".", ",").Replace(";", "."));
+                }
+                catch
+                {
+                    throw new Exception("Wrong string-to-double format");
+                }
+            }
+        }
+        if (result.StartsWith("-"))
+        {
+            return -Math.Abs(res);
+        }
+        else
+        {
+            return res;
+        }
+    }
+
+    private void Calculate()
+    {
+        if (_oparator == "%" && result != null)
+        {
+            result = (ConvertToDouble(result) * 0.01).ToString();
+            firstNumber = ConvertToDouble(result);
+        }
+        else if (_oparator == "Square" && result != null)
+        {
+            result = (Math.Pow(ConvertToDouble(result), 2)).ToString();
+            firstNumber = ConvertToDouble(result);
+        }
+        else if (_oparator == "Sqrt" && result != null)
+        {
+            result = (Math.Sqrt(ConvertToDouble(result))).ToString();
+            firstNumber = ConvertToDouble(result);
+        }
+        else
+        {
+            if (firstNumber != null && secondNumber != null && _oparator != null)
+            {
+                switch (_oparator)
+                {
+                    case "+":
+                        result = (firstNumber + secondNumber).ToString();
+                        break;
+                    case "-":
+                        result = (firstNumber - secondNumber).ToString();
+                        break;
+                    case "*":
+                        result = (firstNumber * secondNumber).ToString();
+                        break;
+                    case "Mod":
+                        result = (firstNumber % secondNumber).ToString();
+                        break;
+                    case "/":
+                        if (secondNumber != 0)
+                        {
+                            result = (firstNumber / secondNumber).ToString();
+                        }
+                        else
+                        {
+                            error = true;
+                            result = "Error: Division by zero";
+                        }
+                        break;
+                }
+            }
+        }
+        calculated = true;
+        firstNumber = ConvertToDouble(result);
+        _oparator = null;
+    }
+}

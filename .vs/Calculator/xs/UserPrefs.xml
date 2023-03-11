@@ -1,0 +1,18 @@
+﻿<Properties StartupConfiguration="{42263254-597D-497B-AD78-A97DFC0B3F3B}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.Calculator FirstBuild="True" PreferredExecutionTarget="/Users/gustavetsopmo/Library/Application Support/Microsoft/EdgeUpdater/apps/msedge-stable/110.0.1587.63/Microsoft Edge.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Pages/Index.razor">
+    <Files>
+      <File FileName="Shared/MainLayout.razor" />
+      <File FileName="Pages/Index.razor" Line="254" Column="30" />
+      <File FileName="wwwroot/css/app.css" />
+      <File FileName="Properties/launchSettings.json" />
+      <File FileName="wwwroot/index.html" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+</Properties>
